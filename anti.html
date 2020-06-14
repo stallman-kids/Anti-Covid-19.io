@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width-device-width, initial-scale=1.0" />
+	<title>다음 지도 API</title>
+</head>
+<body>
+	<div id="map" style="width:100%;height:100vh;"></div>
+
+	<script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=75dd9a6d29f697544aff2310980c717e&libraries=clusterer"></script>
+	<script>
+        const url =
+        "https://8oi9s0nnth.apigw.ntruss.com/corona19-masks/v1/storesByGeo/json?lat=33.499565964&lng=126.5281275767&m=5000";
+
+		var mapContainer = document.getElementById("map"), // 지도를 표시할 div 
+		    mapOption = {
+                
+		        center: new kakao.maps.LatLng(33.499565964, 126.5281275767), // 지도의 중심좌표
+		        level: 3, // 지도의 확대 레벨
+		        mapTypeId : kakao.maps.MapTypeId.ROADMAP // 지도종류
+		    }; 
+
+	// 지도를 생성한다 
+	var map = new kakao.maps.Map(mapContainer, mapOption);  
+
+    var clusterer = new kakao.maps.MarkerClusterer({
+        map : map,
+        averageCenter : true,
+        minLevel : 10,
+    });
+
+    function makeOverListener(map, marker, infowindow){
+        return function () {
+            infowindow.open(map, marker);
+        };
+    }
+
+    function makeOutListener(infowindow) {
+        return function(){
+            infowindow.close();
+        };
+    }
+
+
+    fetch(url)
+        .then((res) => res.json())
+        .then((myJson) => {
+            var markers = []; 
+          const stores = myJson.stores;
+          for (var i = 0; i < stores.length; i++){
+
+              var marker = new kakao.maps.Marker({
+                  position : new kakao.maps.LatLng(
+                      stores[i]["lat"], 
+                      stores[i]["lng"]
+                  ),
+              });
+
+
+              let 재고 = "";
+              switch(stores[i]["remain_stat"]) {
+                  case "plenty" :
+                   재고 = "100개 이상";
+                   break;
+                   case "some":
+                   재고 = "30개 이상";
+                   break;
+                   case "few":
+                   재고 = "2개 이상";
+                   break;
+                   default:
+                   재고 = "재고 없음";
+                   break;
+              }
+
+
+
+              var infowindow = new kakao.maps.InfoWindow({
+                  content: stores[i]["name"] + "<br/>"+ 재고,
+              });
+
+              markers.push(marker);
+              kakao.maps.event.addListener(
+                marker,
+              "mouseover", 
+              makeOverListener(map, marker, infowindow)
+            );
+              kakao.maps.event.addListener(
+               marker,
+              "mouseout", 
+              makeOutListener(infowindow)
+              );
+
+          }
+          clusterer.addMarkers(markers);     
+            
+        });
+
+     </script>
+    </body>
+  </html>
