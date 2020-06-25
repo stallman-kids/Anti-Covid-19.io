@@ -1,113 +1,86 @@
+
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <title>Kakao 지도 시작하기</title>
-    <link rel="stylesheet" href="style.css">
+	<meta charset="utf-8"/>
+	<title>카카오맵 병원좌표</title>
 </head>
 <body>
+	<div id="map" style="width:100%;height:100vh;"></div>
+	<script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=75dd9a6d29f697544aff2310980c717e"></script>
+	<script>
+		var container = document.getElementById('map');
+		var options = {
+			center: new kakao.maps.LatLng(33.499388072233934, 126.53114174306765),
+			level: 7,
+            mapTypeId : kakao.maps.MapTypeId.ROADMAP
+		};
 
-    <div id="page">
-        <header>
- 
-            <h1 style="color : white;">선별 진료소 위치</h1>
-                <div id="top_menu">
-                <a href="index.html">메인</a> |
-                <a href="anti.html">마스크 재고</a> |
-                <a href="hospital.html">병원 좌표</a>
-            </div>
-        </header>
-    </div>
-    <div id="map" style="width:100%;height:100vh;"></div>
-    <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=e3ee406a213eb13cf68f16663115f71c"></script>
-    <script>
-        var container = document.getElementById('map');
-        var options = {
-            center: new kakao.maps.LatLng(33.390701, 126.570667),
-            level: 9
-        };
+		var map = new kakao.maps.Map(container, options);
+    // 마커를 표시할 위치와 내용을 가지고 있는 객체 배열입니다 
+var positions = [
+     {
+        content: '<div>제주대학교 병원<br>064-717-1075<br>제주시 아란13길 15</div>', 
+        latlng: new kakao.maps.LatLng(33.467074, 126.5447058)
+    },
+    {
+        content: '<div>서귀포의료원<br>064-730-3000<br>서귀포시 장수로 47</div>', 
+        latlng: new kakao.maps.LatLng(33.255272, 126.5637258)
+    },
+    {
+        content: '<div>열린병원<br>064-762-8001<br>서귀포시 일주동로 8638</div>', 
+        latlng: new kakao.maps.LatLng(33.254405292986085 , 126.56542889456588)
+    },
+    {
+        content: '<div>한라병원<br>064-740-5000<br>제주시 도령로 65</div>',
+        latlng: new kakao.maps.LatLng(33.48992297582224, 126.4849936326045)
+    },
+    {
+        content: '<div>한마음병원<br>064-750-9000<br>제주시 연신로 52</div>', 
+        latlng: new kakao.maps.LatLng(33.4962819253554 , 126.54623472325575)
+    },
+                {
+        content: '<div>한국병원<br>064-750-0000<br>제주시 서광로 193</div>', 
+        latlng: new kakao.maps.LatLng(33.50017674983848 , 126.5170022258263 )
+    },
+                {
+        content: '<div>중앙병원<br>064-786-7000<br>제주시 월랑로 91</div>', 
+        latlng: new kakao.maps.LatLng(33.492323172340356 , 126.47048499631488 )
+    }
+];
 
-        var map = new kakao.maps.Map(container, options);
-        // 마커를 표시할 위치와 내용을 가지고 있는 객체 배열입니다.
-        var positions = [
-            {
-                title: '제주대학교',
-                content: '<div>제주대학교 병원<br>064-717-1075<br>제주시 아란13길 15</div>',
-                latlng: new kakao.maps.LatLng(33.467074, 126.5447058)
-            },
-            {
-                title: '서귀포의료원',
-                content: '<div>서귀포의료원<br>064-730-3000<br>서귀포시 장수로 47</div>',
-                latlng: new kakao.maps.LatLng(33.255272, 126.5637258)
-            },
-            {
-                title: '열린병원',
-                content: '<div>열린병원<br>064-762-8001<br>서귀포시 일주동로 8638</div>',
-                latlng: new kakao.maps.LatLng(33.254405292986085, 126.56542889456588)
-            },
-            {
-                title: '한라병원',
-                content: '<div>한라병원<br>064-740-5000<br>제주시 도령로 65</div>',
-                latlng: new kakao.maps.LatLng(33.48992297582224, 126.4849936326045)
-            },
-            {
-                title: '한마음병원',
-                content: '<div>한마음병원<br>064-750-9000<br>제주시 연신로 52</div>',
-                latlng: new kakao.maps.LatLng(33.4962819253554, 126.54623472325575)
-            },
-            {
-                title: '한국병원',
-                content: '<div>한국병원<br>064-750-0000<br>제주시 서광로 193</div>',
-                latlng: new kakao.maps.LatLng(33.50017674983848, 126.5170022258263)
-            },
-            {
-                title: '중앙병원',
-                content: '<div>중앙병원<br>064-786-7000<br>제주시 월랑로 91</div>',
-                latlng: new kakao.maps.LatLng(33.492323172340356, 126.47048499631488)
-            }
-        ];
-        var imageSrc = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png";
-        var imageSize = new kakao.maps.Size(24, 35);
+for (var i = 0; i < positions.length; i ++) {
+    // 마커를 생성합니다
+    var marker = new kakao.maps.Marker({
+        map: map, // 마커를 표시할 지도
+        position: positions[i].latlng // 마커의 위치
+    });
 
-        // 마커 이미지를 생성합니다
-        var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
+    // 마커에 표시할 인포윈도우를 생성합니다 
+    var infowindow = new kakao.maps.InfoWindow({
+        content: positions[i].content // 인포윈도우에 표시할 내용
+    });
 
-        for (var i = 0; i < positions.length; i++) {
-            // 마커를 생성합니다
-            var iwRemoveable = false;
-            var marker = new kakao.maps.Marker({
-                map: map, // 마커를 표시할 지도
-                position: positions[i].latlng,
-                title: positions[i].title,
-                image: markerImage
-                // 마커의 위치
-            });
+    // 마커에 mouseover 이벤트와 mouseout 이벤트를 등록합니다
+    // 이벤트 리스너로는 클로저를 만들어 등록합니다 
+    // for문에서 클로저를 만들어 주지 않으면 마지막 마커에만 이벤트가 등록됩니다
+    kakao.maps.event.addListener(marker, 'mouseover', makeOverListener(map, marker, infowindow));
+    kakao.maps.event.addListener(marker, 'mouseout', makeOutListener(infowindow));
+}
 
-            // 마커에 표시할 인포윈도우를 생성합니다
-            var infowindow = new kakao.maps.InfoWindow({
-                content: positions[i].content,
-                removable: iwRemoveable// 인포윈도우에 표시할 내용
-            });
+// 인포윈도우를 표시하는 클로저를 만드는 함수입니다 
+function makeOverListener(map, marker, infowindow) {
+    return function() {
+        infowindow.open(map, marker);
+    };
+}
 
-            // 마커에 이벤트를 등록하는 함수 만들고 즉시 호출하여 클로저를 만듭니다
-            // 클로저를 만들어 주지 않으면 마지막 마커에만 이벤트가 등록됩니다
-            kakao.maps.event.addListener(marker, 'mouseover', makeOverListener(map, marker, infowindow));
-            kakao.maps.event.addListener(marker, 'mouseout', makeOutListener(infowindow));
-        }
-
-        // 인포윈도우를 표시하는 클로저를 만드는 함수입니다
-        function makeOverListener(map, marker, infowindow) {
-            return function () {
-                infowindow.open(map, marker);
-            };
-        }
-
-        // 인포윈도우를 닫는 클로저를 만드는 함수입니다
-        function makeOutListener(infowindow) {
-            return function () {
-                infowindow.close();
-            };
-        }
-    </script>
+// 인포윈도우를 닫는 클로저를 만드는 함수입니다 
+function makeOutListener(infowindow) {
+    return function() {
+        infowindow.close();
+    };
+}
+	</script>
 </body>
 </html>
