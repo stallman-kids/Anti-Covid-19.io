@@ -1,0 +1,22 @@
+*{margin :0px; padding : 0px;}
+ul{list-style : none;}
+a{text-decoration: none;}
+
+header{
+    width : 95em;
+    height: 7em;
+    background-color: black;
+    position:relative;
+}
+body{
+    background-color: #e6e6f0;
+}
+
+#top_menu{
+    position: absolute;
+    bottom: 10px;
+    right : 10px;
+    color : white;
+}
+#top_menu a{color : white;}
+
